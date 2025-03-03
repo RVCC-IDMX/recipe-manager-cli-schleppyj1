@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding Async Code in the Recipe Manager</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #0066cc;
+    }
+
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: Consolas, Monaco, 'Andale Mono', monospace;
+      background-color: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    .note {
+      background-color: #fffacd;
+      padding: 10px;
+      border-left: 4px solid #ffd700;
+      margin: 15px 0;
+    }
+
+    .example {
+      background-color: #e6f7ff;
+      padding: 10px;
+      border-left: 4px solid #1890ff;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Understanding Async Code in the Recipe Manager</h1>
+
+  <p>
+    In the Recipe Manager CLI project, you'll notice some code related to "async" operations. These operations, like
+    reading and writing files or getting input from a user, take time to complete. Let's understand what this means
+    without getting too technical.
+  </p>
+
+  <div class="note">
+    <strong>Good news:</strong> You don't need to understand all the async details to complete this project! We've
+    created helper functions in <code>command-wrapper.js</code> that handle this for you.
+  </div>
+
+  <h2>What is Asynchronous Code?</h2>
+
+  <p>
+    JavaScript has two ways to run code:
+  </p>
+
+  <h3>1. Synchronous Code (One Step at a Time)</h3>
+
+  <pre><code>console.log("Step 1");
+console.log("Step 2");
+console.log("Step 3");</code></pre>
+
+  <p>
+    Output (as expected):
+  </p>
+
+  <pre><code>Step 1
+Step 2
+Step 3</code></pre>
+
+  <h3>2. Asynchronous Code (Start Now, Finish Later)</h3>
+
+  <pre><code>console.log("Step 1");
+setTimeout(function() {
+  console.log("Step 2 - Takes time to complete");
+}, 1000); // Wait 1 second
+console.log("Step 3");</code></pre>
+
+  <p>
+    Output:
+  </p>
+
+  <pre><code>Step 1
+Step 3
+Step 2 - Takes time to complete</code></pre>
+
+  <p>
+    Notice how Step 3 happens before Step 2! That's because JavaScript doesn't wait for the setTimeout to finish.
+  </p>
+
+  <h2>File Operations in Our Project</h2>
+
+  <p>
+    Reading and writing recipe data to <code>recipes.json</code> are asynchronous operations. They take time to
+    complete, just like <code>setTimeout</code> in our example.
+  </p>
+
+  <div class="example">
+    <h3>Example from the project:</h3>
+    <pre><code>// This function reads recipe data from a file
+// It takes time, so it's asynchronous
+async function loadRecipes() {
+  try {
+    const data = await fs.readFile(dataPath, 'utf8');
+    return JSON.parse(data);
+  } catch (error) {
+    console.error('Error loading recipes:', error.message);
+    return [];
+  }
+}</code></pre>
+  </div>
+
+  <h2>How Is This Handled This in the Project</h2>
+
+  <p>
+    In <code>command-wrapper.js</code>, we've created helper functions that handle all the async code for you. You just
+    need to provide a callback function that will run when the operation is complete.
+  </p>
+
+  <div class="example">
+    <h3>Example: Getting Recipes</h3>
+    <pre><code>// In command-wrapper.js (already implemented)
+export function getRecipes(callback) {
+  loadRecipes()
+    .then(recipes => {
+      callback(recipes);
+    })
+    .catch(error => {
+      displayError(`Failed to load recipes: ${error.message}`);
+      callback([]);
+    });
+}
+
+// In index.js (how you'll use it)
+getRecipes(function(recipes) {
+  // This code runs when the recipes are loaded
+  displayRecipeList(recipes);
+});</code></pre>
+  </div>
+
+  <h2>Callbacks: Your Simple Way to Handle Async</h2>
+
+  <p>
+    A callback is just a function that runs when something else finishes. In this project, we use callbacks to handle
+    async operations in a simple way.
+  </p>
+
+  <div class="example">
+    <h3>How Callbacks Work in This Project:</h3>
+    <pre><code>// Get the recipe by ID
+getRecipeById(argv.id, function(recipe) {
+  // This function runs when the recipe is loaded
+
+  if (!recipe) {
+    // Recipe not found, exit early
+    return;
+  }
+
+  // Now we can work with the recipe
+  displayRecipeDetails(recipe);
+});</code></pre>
+  </div>
+
+  <h2>Async/Await Keywords</h2>
+
+  <p>
+    You'll see <code>async</code> and <code>await</code> keywords in some of the provided code. Here's what they
+    mean, but you don't need to use them in your code:
+  </p>
+
+  <ul>
+    <li><code>async</code>: Marks a function as asynchronous, meaning it will handle operations that take time</li>
+    <li><code>await</code>: Pauses execution until an async operation completes</li>
+  </ul>
+
+  <div class="note">
+    <strong>Remember:</strong> For this project, you don't need to write code with <code>async</code> or
+    <code>await</code>. Just use the helper provided functions in <code>command-wrapper.js</code> and focus on
+    implementing the recipe management features.
+  </div>
+
+  <h2>The Try/Catch Pattern</h2>
+
+  <p>
+    Another pattern you'll see is "try/catch" blocks, which handle errors in async code:
+  </p>
+
+  <pre><code>try {
+  // Code that might cause an error
+  const data = await fs.readFile('some-file.json', 'utf8');
+  console.log(data);
+} catch (error) {
+  // Code that runs if there's an error
+  console.error('Something went wrong:', error.message);
+}</code></pre>
+
+  <p>
+    This is a way to handle errors gracefully. Instead of crashing the program, we can display a friendly error message.
+  </p>
+
+  <h2>Summary</h2>
+
+  <p>
+    In your Recipe Manager CLI project:
+  </p>
+
+  <ol>
+    <li>File operations (reading/writing recipes) are asynchronous</li>
+    <li>We've provided helper functions in <code>command-wrapper.js</code> that handle async code for you</li>
+    <li>You'll use callback functions to work with data after it's loaded</li>
+    <li>You don't need to write <code>async</code>/<code>await</code> code yourself</li>
+  </ol>
+
+  <p>
+    Focus on completing the challenges and implementing the recipe management features. The async aspects are taken care
+    of for you!
+  </p>
+</body>
+
+</html>

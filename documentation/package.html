@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Recipe Manager CLI - Package Documentation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #0066cc;
+    }
+
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+
+    code {
+      font-family: Consolas, Monaco, 'Andale Mono', monospace;
+      background-color: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    .note {
+      background-color: #fffacd;
+      padding: 10px;
+      border-left: 4px solid #ffd700;
+      margin: 15px 0;
+    }
+
+    .package {
+      margin-bottom: 40px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+    }
+
+    .challenge {
+      background-color: #e6f7ff;
+      border-left: 4px solid #1890ff;
+      padding: 10px;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Recipe Manager CLI - Package Documentation</h1>
+
+  <p>This document explains the key Node.js packages used in the Recipe Manager CLI project challenges.</p>
+
+  <div class="note">
+    <strong>Note:</strong> This project uses ES Modules (ESM) instead of CommonJS. You will see
+    <code>import</code> statements instead of <code>require()</code> in the code examples.
+  </div>
+
+  <h2>Packages Used in the Challenges</h2>
+
+  <p>The following packages are used throughout the project challenges:</p>
+
+  <div class="package">
+    <h2>1. Inquirer Packages</h2>
+    <p>The Inquirer packages are used for collecting user input through interactive command-line prompts.</p>
+    <p>They allow you to define prompts with built-in validation. You can supply a <code>validate</code> function
+      with each prompt. This function checks the user input and either returns <code>true</code> if the input is valid
+      or returns an error message if it is not.
+    </p>
+
+    <h3>Relevant Packages:</h3>
+    <ul>
+      <li><code>@inquirer/input</code> - For text input</li>
+      <li><code>@inquirer/number</code> - For number input</li>
+      <li><code>@inquirer/confirm</code> - For yes/no questions</li>
+    </ul>
+
+    <div class="challenge">
+      <strong>Used in:</strong> Challenges 1-3 (prompts.js)
+    </div>
+
+    <h3>Text Input Example (with validation):</h3>
+    <pre><code>import input from '@inquirer/input';
+
+// Prompt for a recipe name
+const name = await input({
+  message: 'Enter recipe name:',
+  validate: function(value) {
+    if (value.trim() !== '') {
+      return true;
+    } else {
+      return 'Recipe name is required';
+    }
+  }
+});</code></pre>
+
+    <h3>Number Input Example (with validation):</h3>
+    <pre><code>import number from '@inquirer/number';
+
+// Prompt for cooking time
+const cookingTime = await number({
+  message: 'Enter cooking time (in minutes):',
+  validate: function(value) {
+    if (value > 0) {
+      return true;
+    } else {
+      return 'Cooking time must be greater than 0';
+    }
+  }
+});</code></pre>
+
+    <h3>Number Input with Default Value:</h3>
+    <pre><code>// Prompt for servings with a default value of 4
+const servings = await number({
+  message: 'Enter number of servings:',
+  default: 4,
+  validate: function(value) {
+    if (value > 0) {
+      return true;
+    } else {
+      return 'Servings must be greater than 0';
+    }
+  }
+});</code></pre>
+
+    <h3>Confirmation Example:</h3>
+    <pre><code>import confirm from '@inquirer/confirm';
+
+// Ask for confirmation
+const confirmed = await confirm({
+  message: 'Are you sure you want to delete this recipe?'
+});</code></pre>
+  </div>
+
+  <div class="package">
+    <h2>2. Chalk</h2>
+    <p>Chalk is used to add color and basic styling to terminal text.</p>
+
+    <div class="challenge">
+      <strong>Used in:</strong> Challenges 4-5 (display.js)
+    </div>
+
+    <h3>Basic Color Examples:</h3>
+    <pre><code>import chalk from 'chalk';
+
+// Colored text examples
+console.log(chalk.blue('This text is blue'));
+console.log(chalk.red('This text is red'));
+console.log(chalk.green('This text is green'));
+console.log(chalk.yellow('This text is yellow'));
+console.log(chalk.cyan('This text is cyan'));</code></pre>
+
+    <h3>Styling Examples:</h3>
+    <pre><code>// Bold text example
+console.log(chalk.bold('This text is bold'));
+
+// Combining styles
+console.log(chalk.cyan.bold('This text is bold and cyan'));
+
+// Example UI messages
+console.log(chalk.green('✓ Success: Recipe created'));
+console.log(chalk.red('✗ Error: Recipe not found'));
+console.log(chalk.yellow('⚠ Warning: No ingredients added'));</code></pre>
+
+    <h3>Use in Recipe Display:</h3>
+    <pre><code>// Display recipe details with styling
+console.log(chalk.cyan.bold(`Recipe: ${recipe.name}`));
+console.log(chalk.cyan('Cooking Time: ') + `${recipe.cookingTime} minutes`);
+console.log(chalk.cyan('Servings: ') + recipe.servings);</code></pre>
+  </div>
+
+  <div class="package">
+    <h2>3. CLI-Table3</h2>
+    <p>CLI-Table3 is used for creating tables in command-line applications.</p>
+    <p>You can use CLI-Table3 to format data into rows and columns, set column widths, and align text. It works well
+      with Chalk for adding color to table headers and cells.
+    </p>
+
+    <div class="challenge">
+      <strong>Used in:</strong> Challenge 4 (display.js)
+    </div>
+
+    <h3>Basic Table Example:</h3>
+    <pre><code>import Table from 'cli-table3';
+import chalk from 'chalk';
+
+// Create a table with headers
+const table = new Table({
+  head: [
+    chalk.cyan('Name'),
+    chalk.cyan('Cooking Time'),
+    chalk.cyan('Servings')
+  ],
+  colWidths: [30, 15, 10]
+});
+
+// Add rows to the table
+table.push(
+  ['Spaghetti Bolognese', '45 min', 4],
+  ['Caesar Salad', '15 min', 2],
+  ['Pancakes', '20 min', 6]
+);
+
+// Display the table
+console.log(table.toString());</code></pre>
+
+    <h3>Recipe List Table:</h3>
+    <pre><code>// Create a table for recipes
+const table = new Table({
+  head: [
+    chalk.cyan('ID'),
+    chalk.cyan('Name'),
+    chalk.cyan('Cooking Time'),
+    chalk.cyan('Servings')
+  ],
+  colWidths: [15, 30, 15, 10]
+});
+
+// Add each recipe as a row
+recipes.forEach(function(recipe) {
+  table.push([
+    recipe.id,
+    recipe.name,
+    `${recipe.cookingTime} min`,
+    recipe.servings
+  ]);
+});</code></pre>
+  </div>
+
+  <div class="package">
+    <h2>4. Yargs</h2>
+    <p>Yargs is used to build command-line tools by parsing command-line arguments and setting up commands.</p>
+
+    <div class="challenge">
+      <strong>Used in:</strong> Challenges 7-9 (index.js)
+    </div>
+
+    <h3>Command Structure:</h3>
+    <pre><code>import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
+
+yargs(hideBin(process.argv))
+  .command('command-name', 'Command description', (yargs) => {
+    // Define command options
+    yargs.positional('argument', {
+      describe: 'Description of argument',
+      type: 'string'
+    });
+  }, (argv) => {
+    // Command handler
+    console.log(`Executing command with argument: ${argv.argument}`);
+  })
+  .help()
+  .argv;</code></pre>
+
+    <h3>Recipe Creation Example:</h3>
+    <pre><code>// Create a new recipe command
+.command('create', 'Create a new recipe', () => {
+  // Prompt for recipe information
+  promptForRecipeInfo().then(function(recipeInfo) {
+    // Create and save the recipe
+    const newRecipe = createRecipe(
+      recipeInfo.name,
+      recipeInfo.cookingTime,
+      recipeInfo.servings
+    );
+    createNewRecipe(newRecipe);
+  });
+})</code></pre>
+
+    <h3>Command with Positional Arguments:</h3>
+    <pre><code>// Add ingredient to a recipe by ID
+.command('add-ingredient <id>', 'Add ingredient to a recipe', (yargs) => {
+  yargs.positional('id', {
+    describe: 'Recipe ID',
+    type: 'number'
+  });
+}, (argv) => {
+  // Get the recipe by ID and process further
+  getRecipeById(argv.id, function(recipe) {
+    if (!recipe) {
+      return;
+    }
+    // Additional code here...
+  });
+})</code></pre>
+
+    <h3>Command with Optional Arguments:</h3>
+    <pre><code>// Find quick recipes with an optional time limit
+.command('quick [time]', 'Find recipes that can be made quickly', (yargs) => {
+  yargs.positional('time', {
+    describe: 'Maximum cooking time in minutes',
+    type: 'number',
+    default: 30
+  });
+}, (argv) => {
+  // Retrieve recipes that meet the time limit
+  getQuickRecipesList(argv.time, function(quickRecipes, maxTime) {
+    // Display results...
+  });
+})</code></pre>
+  </div>
+
+  <h2>The Command Wrapper Helper</h2>
+  <p>The helper functions in <code>src/cli/command-wrapper.js</code> handle asynchronous operations so you can focus on
+    core functionality.
+  </p>
+
+  <h3>Key Helper Functions:</h3>
+  <ul>
+    <li><code>getRecipes(callback)</code> - Retrieves all recipes and passes them to your callback</li>
+    <li><code>getRecipeById(id, callback)</code> - Retrieves a specific recipe by ID</li>
+    <li><code>createNewRecipe(recipe)</code> - Saves a new recipe</li>
+    <li><code>updateExistingRecipe(recipe, successMessage)</code> - Updates an existing recipe</li>
+    <li><code>getQuickRecipesList(maxTime, callback)</code> - Retrieves recipes that can be made within a specified time
+    </li>
+  </ul>
+
+  <div class="note">
+    <p>When using these helper functions, you provide a function (called a callback) that runs when the operation
+      completes. For example:
+    </p>
+    <p>
+      Higher-order functions enable you to write callbacks by accepting functions as arguments. When you write a
+      callback, you define a function that encapsulates specific behavior to be executed after an operation completes.
+      This allows you to customize the behavior of a higher-order function, making your code more modular and flexible.
+    </p>
+    <pre><code>getRecipes(function(recipes) {
+  // Code to run after recipes are loaded
+  displayRecipeList(recipes);
+});</code></pre>
+  </div>
+
+  <h2>Understanding ForEach Loops</h2>
+  <p>In this project, you'll use <code>forEach</code> to iterate through arrays of recipes, ingredients, and steps.</p>
+
+  <h3>Basic ForEach Example:</h3>
+  <pre><code>// Iterate through an array of recipes
+recipes.forEach(function(recipe) {
+  console.log(`Recipe: ${recipe.name}`);
+});</code></pre>
+
+  <h3>ForEach with Index:</h3>
+  <pre><code>// Iterate through steps with numbering
+recipe.steps.forEach(function(step, index) {
+  console.log(`${index + 1}. ${step}`);
+});</code></pre>
+
+  <p>This documentation outlines the key packages used in the Recipe Manager CLI project. Refer to it as you work
+    through each challenge.</p>
+</body>
+
+</html>

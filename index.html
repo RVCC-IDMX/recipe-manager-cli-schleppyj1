@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Index</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    #links a {
+      display: block;
+      margin-bottom: 1rem;
+      font-size: 16pt;
+      color: #3498db;
+      text-decoration: none;
+    }
+
+    #links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Project Index</h1>
+  <div id="links">
+    <!-- Links to coverage and docs pages will be added here -->
+  </div>
+
+  <script>
+    // Asynchronously check if a URL exists by sending a HEAD request
+    async function checkUrl(url) {
+      try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    async function addLinks() {
+      const linksDiv = document.getElementById('links');
+      const pages = [
+        { name: 'Async Code', url: 'documentation/async.html' },
+        { name: 'Package Documentation', url: 'documentation/package.html' }
+      ];
+
+      for (const page of pages) {
+        if (await checkUrl(page.url)) {
+          const link = document.createElement('a');
+          link.href = page.url;
+          link.textContent = page.name;
+          linksDiv.appendChild(link);
+        }
+      }
+    }
+
+    // Run the link creation once the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', addLinks);
+  </script>
+</body>
+
+</html>
