@@ -122,5 +122,22 @@
       "Serve with maple syrup"
     ],
     "dateCreated": "3/16/2023"
+  },
+  {
+    "id": 1742180168035,
+    "name": "Waffles",
+    "cookingTime": 10,
+    "servings": 2,
+    "ingredients": [
+      {
+        "name": "Egg",
+        "amount": 2,
+        "unit": "tbsps"
+      }
+    ],
+    "steps": [
+      "Stir in flour, water, eggs, and oil"
+    ],
+    "dateCreated": "3/16/2025"
   }
 ]
